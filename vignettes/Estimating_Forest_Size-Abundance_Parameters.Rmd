@@ -340,8 +340,7 @@ alpha_tree_results <- foreach(
   # Step 3: Fit Bayesian Pareto model to estimate alpha
   fit <- tryCatch(
     fit_alpha_model(
-      trunc_output$bayesian_data,       # filtered data
-      trunc_output$final_breakpoint,    # refined lower breakpoint
+      trunc_output,
       LAI = 3.5,                        # leaf area index
       prior_mean = 1.4,                 # prior mean for alpha
       prior_sd = 0.3                     # prior SD for alpha

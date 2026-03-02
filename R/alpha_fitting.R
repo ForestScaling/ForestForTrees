@@ -46,7 +46,7 @@ model {
 #' It returns the estimated breakpoint and the processed KDE data. The name of the
 #' column in the data frame that holds the size information must be called "dbh".
 #'
-#' @param data A data frame containing individual measurements (e.g., trees).
+#' @param data A data frame containing individual measurements (e.g., trees).Measurements must be called "dbh".
 #' @param n_bootstrap Number of bootstrap replicates for KDE smoothing (default = 1000).
 #' @param bandwidth Bandwidth method passed to `density()` (default = "SJ").
 #' @param trim_max Upper size limit.
@@ -61,9 +61,9 @@ model {
 #' }
 #' @export
 potential_break <- function(data,
-                                             n_bootstrap = 1000,
-                                             bandwidth = "SJ",
-                                             trim_max = 50) {
+                            n_bootstrap = 1000,
+                            bandwidth = "SJ",
+                            trim_max = 50) {
   # Input validation
   # stopifnot(is.numeric(data[["dbh"]]))
 
@@ -72,7 +72,9 @@ potential_break <- function(data,
   trim_max_value <- trim_max # Store this as well
 
   # Pull and trim size vector
-  size_vector_trimmed <- data[is.na(data) == FALSE]#[["dbh"]]
+  # size_vector_trimmed <- data[is.na(data) == FALSE]#[["dbh"]]
+  size_vector_trimmed <- data$dbh
+  size_vector_trimmed <- size_vector_trimmed[!is.na(size_vector_trimmed)]
   size_vector_trimmed <- size_vector_trimmed[size_vector_trimmed <= trim_max]
   if (length(size_vector_trimmed) < 25) {
     stop("Not enough observations below trim_max for breakpoint estimation (min 25 required).")
@@ -83,11 +85,11 @@ potential_break <- function(data,
   kde_df <- data.frame(x = kde$x, y = kde$y)
   observed_vals <- sort(unique(size_vector_trimmed)) # Used for filtering KDE results
 
-  # filter KDE results to observed data range
+  # Filter KDE results to observed data range
   kde_df <- kde_df %>%
     dplyr::filter(x >= min(size_vector_trimmed), x <= max(size_vector_trimmed))
 
-  # Further  filter KDE to points near observed values
+  # Further filter KDE to points near observed values
   filtered_kde <- kde_df %>%
     dplyr::rowwise() %>%
     dplyr::filter(any(abs(x - observed_vals) <= 0.5)) %>%
@@ -115,11 +117,9 @@ potential_break <- function(data,
   )
 
   # Identify local peaks using splus2R::peaks()
-  peak_df <- cbind(
-    bootstrap_kde_log,
-    peaks = splus2R::peaks(bootstrap_kde_log$mean_log_density))%>%
-    dplyr::filter(peaks == TRUE)
-
+  peak_df <- splus2R::peaks(bootstrap_kde_log$mean_log_density) %>%
+    cbind(bootstrap_kde_log) %>%
+    dplyr::filter(. == TRUE)
 
   if (nrow(peak_df) == 0) {
     stop("No distinct peaks detected in the KDE curve for breakpoint identification.")
@@ -127,7 +127,7 @@ potential_break <- function(data,
 
   # Calculate the candidate breakpoint
   potential_breakpoint <- peak_df %>%
-    dplyr::filter(log_x <= stats::quantile(log10(size_vector_trimmed), 0.75)) %>%
+    dplyr::filter(log_x <= quantile(log10(size_vector_trimmed), 0.75)) %>%
     dplyr::filter(log_x == max(log_x)) %>%
     dplyr::pull(log_x)
 
@@ -146,7 +146,7 @@ potential_break <- function(data,
   ))
 }
 
-#' Determine Truncation Points and filter Data for Power-Law Modeling
+#' Determine Truncation Points and Filter Data for Power-Law Modeling
 #'
 #' This function takes the potential breakpoint and KDE data from a previous step,
 #' performs segmented regression, determines the upper truncation point,
@@ -155,9 +155,6 @@ potential_break <- function(data,
 #' @param breakpoint_kde_results A list returned by `potential_break`.
 #'   It must contain `potential_breakpoint`, `bootstrap_kde_log`,
 #'   `original_raw_data_df`, and `trim_max_value`.
-#' @param min_size The mimimum tree DBH that will be in the final distribution. This is the lower bound to
-#' the Pareto distribution, not the breakpoint for obscured vs unobscured trees. As such, this is usually approx
-#' 10 cm.
 #'
 #' @return A list with:
 #' \describe{
@@ -179,7 +176,7 @@ truncate_filter <- function(breakpoint_kde_results, min_size = 10) {
     stop("Potential breakpoint is NA. Cannot proceed with segmented regression. Check 'potential_break' output.")
   }
 
-  # filter the data for segmented regression *before* passing it to lm
+  # Filter the data for segmented regression *before* passing it to lm
   bootstrap_kde_log_for_lm <- bootstrap_kde_log[bootstrap_kde_log$log_x >= potential_breakpoint, ]
 
 
@@ -202,28 +199,28 @@ truncate_filter <- function(breakpoint_kde_results, min_size = 10) {
 
   # Create segment data frame
   segments_df <- data.frame(
-    left_x = utils::head(segment_boundaries, -1),     # Left boundary of each segment
-    right_x = utils::tail(segment_boundaries, -1),   # Right boundary of each segment
+    left_x = head(segment_boundaries, -1),     # Left boundary of each segment
+    right_x = tail(segment_boundaries, -1),   # Right boundary of each segment
     slope = slopes                    # Slope of each segment
   )
 
   if(segments_df[nrow(segments_df),]$slope<=-min_size | segments_df[nrow(segments_df),]$slope>0){
     bayesian_data<-original_data_trimmed_df%>%
-      dplyr::filter(dbh>=10^potential_breakpoint)%>%
-      dplyr::filter(dbh>=min_size)%>%
-      dplyr::filter(dbh<=10^segments_df[nrow(segments_df),]$left_x)
+      filter(dbh>=10^potential_breakpoint)%>%
+      filter(dbh>=min_size)%>%
+      filter(dbh<=10^segments_df[nrow(segments_df),]$left_x)
     bootstrap_kde_log<-bootstrap_kde_log%>%
-      dplyr::filter(log_x>=potential_breakpoint)%>%
-      dplyr::filter(log_x>=log10(min_size))%>%
-      dplyr::filter(log_x<=segments_df[nrow(segments_df),]$left_x)
+      filter(log_x>=potential_breakpoint)%>%
+      filter(log_x>=log10(min_size))%>%
+      filter(log_x<=segments_df[nrow(segments_df),]$left_x)
   }else{
     bayesian_data<-original_data_trimmed_df%>%
-      dplyr::filter(dbh>=10^potential_breakpoint)%>%
-      dplyr::filter(dbh>=min_size)
+      filter(dbh>=10^potential_breakpoint)%>%
+      filter(dbh>=min_size)
 
     bootstrap_kde_log<-bootstrap_kde_log%>%
-      dplyr::filter(log_x>=potential_breakpoint)%>%
-      dplyr::filter(log_x>=log10(min_size))
+      filter(log_x>=potential_breakpoint)%>%
+      filter(log_x>=log10(min_size))
   }
   return(list(
     bayesian_data = bayesian_data,
@@ -240,6 +237,7 @@ truncate_filter <- function(breakpoint_kde_results, min_size = 10) {
 #' as we know must be installed directly. Try this link (https://cran.r-project.org/bin/windows/Rtools/)
 #'
 #' @param bayesian_data A data frame of filtered tree sizes (from `truncate_filter()`).
+#' @param bootstrap_kde_log A data frame of log10(size) and log10(kernel density), used for computing R2.
 #' @param breakpoint The final lower log10 size threshold (from KDE peak).
 #' @param LAI A numeric value for site-level Leaf Area Index. The function assumes your LAI value is on
 #' a 1-10 scale and will divide by 10 to get LAI between 0 and 1 (e.g., if you have an LAI of 5 on a scale of 1-10,
@@ -260,8 +258,9 @@ truncate_filter <- function(breakpoint_kde_results, min_size = 10) {
 #'   \item{stan_fit}{Stan fit object.}
 #' }
 #' @export
-fit_alpha_model <- function(bayesian_data,
-                            breakpoint,
+fit_alpha_model <- function(filtered_data,
+                            # bayesian_data,
+                            # breakpoint,
                             LAI,
                             prior_mean,
                             prior_sd,
@@ -269,8 +268,12 @@ fit_alpha_model <- function(bayesian_data,
                             iter = 9000,
                             warmup = 6000,
                             chains = 4,
-                            cores = 1,
-                            refresh = 0) {
+                            cores = 1
+                            # bootstrap_kde_log
+) {
+  bayesian_data<-filtered_data$bayesian_data
+  breakpoint <- filtered_data$final_breakpoint
+  bootstrap_kde_log <- filtered_data$kerneldens_logtransform
 
   stopifnot(is.data.frame(bayesian_data),
             "dbh" %in% names(bayesian_data),
@@ -311,7 +314,7 @@ fit_alpha_model <- function(bayesian_data,
   summary_df <- posterior::summarise_draws(stan_fit) %>%
     dplyr::filter(variable == "alpha") %>%
     dplyr::mutate(
-      R2_kernel = performance::r2(stats::lm(mean_log_density ~ log_x, trunc_output$kerneldens_logtransform))$R2
+      R2_kernel = performance::r2(stats::lm(mean_log_density ~ log_x, bootstrap_kde_log))$R2
     )
 
   return(list(
@@ -322,4 +325,6 @@ fit_alpha_model <- function(bayesian_data,
     bayesian_data = bayesian_data
   ))
 }
+
+
 
