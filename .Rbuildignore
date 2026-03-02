@@ -1,0 +1,10 @@
+^\.github$
+^tarballs$
+^ScalingFromSkypackage\.Rproj$
+^LICENSE\.md$
+^doc$
+^Meta$
+^vignettes/.Rhistory$
+^vignettes/.RData$
+^vignettes/.Rproj$
+^\.Rproj\.user$
