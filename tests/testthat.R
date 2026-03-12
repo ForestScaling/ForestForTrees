@@ -7,6 +7,6 @@
 # * https://testthat.r-lib.org/articles/special-files.html
 
 library(testthat)
-library(ScalingFromSkypackage)
+library(ForestForTrees)
 
-test_check("ScalingFromSkypackage")
+test_check("ForestForTrees")

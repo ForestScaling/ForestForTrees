@@ -1,36 +1,47 @@
-Package: ScalingFromSkypackage
-Title: Estimate Forest Size-Abundance Distribution from Remote Sensing Image
-Version: 1.0
+Package: ForestForTrees
+Title: Estimate Forest Size-Abundance Distributions from Remote Sensing Data
+Version: 1.0.0
 Authors@R: c(
     person("Adam J.", "Eichenwald", email = "adam.eichenwald@maine.edu", role = c("aut", "cre")),
     person("John M.", "Grady", role = "aut"),
     person("Alyson", "East", role = "aut"),
     person("Noah", "Charney", role = "aut"),
     person("Sydne", "Record", role = "aut"))
-Description: Estimate forest size-abundance distribution from remote sensing image.
+Description: Provides a generalized, sensor-agnostic pipeline for estimating
+    full forest size-abundance distributions from remotely sensed canopy data.
+    The package automates Bayesian MCMC sampling, uncertainty propagation, and
+    observational window detection using a truncated Pareto framework, and
+    includes functionality for landscape-scale gridded mapping of forest
+    structural parameters.
 License: MIT + file LICENSE
 Encoding: UTF-8
 VignetteBuilder: knitr
-Suggests: 
+Suggests:
     knitr,
     rmarkdown,
     VGAM,
-    sf,
     ggplot2,
-    purrr,
-    testthat (>= 3.0.0)
-Depends: 
+    testthat (>= 3.0.0),
+    foreach,
+    doParallel,
+    ggrepel,
+    patchwork,
+    terra
+Depends:
     R (>= 3.5)
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 LazyData: true
 LazyDataCompression: xz
-Imports: 
+Imports:
     dplyr,
     performance,
     posterior,
+    rlang,
     rstan,
     tidyr,
     segmented,
-    splus2R
+    splus2R,
+    sf,
+    stats
 Config/testthat/edition: 3

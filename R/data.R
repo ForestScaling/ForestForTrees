@@ -3,7 +3,7 @@
 #' A sample dataset derived from the Harvard Forest CTFS-ForestGEO Mapped Forest Plot
 #' (HF253) and supplemented with canopy height measurements from the NEON Airborne
 #' Observation Platform (AOP). This dataset provides tree-level information used in
-#' the \pkg{ScalingFromSkypackage} for examples and testing.
+#' the \pkg{ForestForTrees} package for examples and testing.
 #'
 #' The dataset contains a subset of the full Harvard Forest plot (see Source), including
 #' bounding box coordinates, canopy structural attributes, and derived estimates of
@@ -41,7 +41,7 @@
 #' The original plot is much larger than 1 hectare.
 #'
 #' This dataset is intended for demonstration and testing purposes within the
-#' \pkg{ScalingFromSky} package. It includes only a subset of the original Harvard Forest
+#' \pkg{ForestForTrees} package. It includes only a subset of the original Harvard Forest
 #' dataset and should not be used as a replacement for the full CTFS-ForestGEO plot data.
 #'
 #' @source
@@ -87,7 +87,7 @@ NULL
 #' # Access the data
 #' data(neon_truemeasuredalpha)
 #' @docType data
-#' @name "neon_truemeasuredalpha"
+#' @name neon_truemeasuredalpha
 NULL
 
 #' Remote Sensing Tree Canopy Polygons (NEON)
@@ -122,7 +122,7 @@ NULL
 #' library(sf)
 #' data(neon_data)
 #' @docType data
-#' @name "neon_data"
+#' @name neon_data
 NULL
 
 #' Random Forest Priors for Alpha (FIA-derived)
@@ -149,7 +149,7 @@ NULL
 #' @examples
 #' data(alpha_priors)
 #' @docType data
-#' @name "alpha_priors"
+#' @name alpha_priors
 NULL
 
 #' Site-Level Leaf Area Index (LAI)
@@ -171,6 +171,8 @@ NULL
 #' influences the amount of light intercepted by the canopy and the rate of
 #' transpiration.
 #'
+#' @examples
 #' data(Leaf_area_index)
-#' #' @docType data
-#' @name "Leaf_area_index"
+#' @docType data
+#' @name Leaf_area_index
+NULL

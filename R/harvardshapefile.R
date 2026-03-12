@@ -6,7 +6,7 @@
 #' extracted from a lidar-based Canopy Height Model (CHM).
 #'
 #' This dataset provides an example of the type of spatial input data used in
-#' \pkg{ScalingFromSkypackage} for linking image-based crown detections with structural
+#' \pkg{ForestForTrees} for linking image-based crown detections with structural
 #' and demographic estimates.
 #'
 #' @format A simple feature (\code{sf}) object with 6 features and 12 attributes:
@@ -29,7 +29,7 @@
 #' forest inventory measurements.
 #'
 #' This dataset is intended for demonstration and testing purposes within
-#' \pkg{ScalingFromSkypackage}.
+#' \pkg{ForestForTrees}.
 #'
 #' @source
 #' Derived from Harvard Forest ForestGEO data and NEON lidar products
