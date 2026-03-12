@@ -1,5 +1,7 @@
 #' @importFrom dplyr %>%
 #' @importFrom rlang %||% !! := sym
+#' @importFrom stats quantile
+#' @importFrom utils head tail
 NULL
 
 utils::globalVariables(c(
