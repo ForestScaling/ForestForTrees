@@ -30,7 +30,7 @@ NEON Airborne Observation Platform (AOP): \url{https://www.neonscience.org/data-
 A sample dataset derived from the Harvard Forest CTFS-ForestGEO Mapped Forest Plot
 (HF253) and supplemented with canopy height measurements from the NEON Airborne
 Observation Platform (AOP). This dataset provides tree-level information used in
-the \pkg{ScalingFromSkypackage} for examples and testing.
+the \pkg{ForestForTrees} package for examples and testing.
 }
 \details{
 The dataset contains a subset of the full Harvard Forest plot (see Source), including
@@ -52,7 +52,7 @@ fishnet shapefile with 1 hectare squares overlaid on top of the original plot.
 The original plot is much larger than 1 hectare.
 
 This dataset is intended for demonstration and testing purposes within the
-\pkg{ScalingFromSky} package. It includes only a subset of the original Harvard Forest
+\pkg{ForestForTrees} package. It includes only a subset of the original Harvard Forest
 dataset and should not be used as a replacement for the full CTFS-ForestGEO plot data.
 }
 \examples{

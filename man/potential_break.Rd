@@ -7,13 +7,14 @@
 potential_break(data, n_bootstrap = 1000, bandwidth = "SJ", trim_max = 50)
 }
 \arguments{
-\item{data}{A data frame containing individual measurements (e.g., trees).}
+\item{data}{A data frame containing individual measurements (e.g., trees). Measurements must be called "dbh".}
 
 \item{n_bootstrap}{Number of bootstrap replicates for KDE smoothing (default = 1000).}
 
 \item{bandwidth}{Bandwidth method passed to \code{density()} (default = "SJ").}
 
-\item{trim_max}{Upper size limit.}
+\item{trim_max}{Upper DBH size limit in cm (default = 50). Trees larger than this value are
+excluded before breakpoint detection.}
 }
 \value{
 A list with:
@@ -30,4 +31,11 @@ This function performs Kernel Density Estimation (KDE) and bootstrapping
 to identify a potential visibility breakpoint in size-abundance data.
 It returns the estimated breakpoint and the processed KDE data. The name of the
 column in the data frame that holds the size information must be called "dbh".
+}
+\examples{
+\dontrun{
+data("harv_data_sample")
+df <- harv_data_sample[harv_data_sample$IDhectbest == 1, "dbh", drop = FALSE]
+kde_output <- potential_break(df)
+}
 }

@@ -8,7 +8,6 @@ estimate_total_trees(
   alpha_model_output,
   siteID = NULL,
   DBH_max = NULL,
-  stan_model_compiled,
   N_tot_prior_mean = 1250,
   N_tot_prior_sd = 625,
   chains = 4,
@@ -21,11 +20,9 @@ estimate_total_trees(
 \arguments{
 \item{alpha_model_output}{A named list returned by \code{fit_alpha_model()}.}
 
-\item{siteID}{Optional site ID tag for output (default = extracted from alpha_model_output).}
+\item{siteID}{Optional site ID tag for output (default = \code{NULL}).}
 
-\item{DBH_max}{Optional max DBH value (default = max of site_data).}
-
-\item{stan_model_compiled}{A pre-compiled Stan model object for total tree estimation.}
+\item{DBH_max}{Optional max DBH value (default = max of site data).}
 
 \item{N_tot_prior_mean}{Prior mean for N_tot (default = 1250).}
 
@@ -37,15 +34,30 @@ estimate_total_trees(
 
 \item{iter}{Total iterations (default = 9000).}
 
-\item{refresh}{Refresh rate for Stan (default = 0).}
+\item{refresh}{Refresh rate for Stan progress output (default = 0, i.e., silent).}
 
-\item{num_alpha_samples}{The total number of samples from the posterior for alpha that you want to include, in case you want to reduce runtime.}
+\item{num_alpha_samples}{Number of posterior alpha samples to use (default = 500).
+Reducing this can speed up runtime at a small cost to precision.}
 }
 \value{
-A list with posterior summary for N_tot and full stan fit object.
+A list with:
+\describe{
+\item{posterior_summary}{Data frame of posterior summaries for N_tot.}
+\item{stan_fit}{Full Stan fit object.}
+}
 }
 \description{
 This function fits a Stan model to estimate the total number of trees in a site,
 using output from \code{fit_alpha_model()}, which includes posterior samples, LAI and
 breakpoint normalization, and raw DBH data.
+}
+\examples{
+\dontrun{
+data("harv_data_sample")
+df <- harv_data_sample[harv_data_sample$IDhectbest == 1, "dbh", drop = FALSE]
+kde_output   <- potential_break(df)
+trunc_output <- truncate_filter(kde_output)
+fit          <- fit_alpha_model(trunc_output, LAI = 5.4, prior_mean = 1.4, prior_sd = 0.3)
+trees        <- estimate_total_trees(fit, N_tot_prior_mean = 1250, N_tot_prior_sd = 625)
+}
 }

@@ -11,6 +11,6 @@ A character string containing the full Stan model code.
 stan_totaltrees_model
 }
 \description{
-This is the default Stan model used by \code{\link[=estimate_total_trees]{estimate_total_trees()}}. You can modify it by replacing the \code{stan_model_code} argument.
+This is the default Stan model used internally by \code{\link[=estimate_total_trees]{estimate_total_trees()}}.
 }
 \keyword{datasets}

@@ -29,7 +29,7 @@ extracted from a lidar-based Canopy Height Model (CHM).
 }
 \details{
 This dataset provides an example of the type of spatial input data used in
-\pkg{ScalingFromSkypackage} for linking image-based crown detections with structural
+\pkg{ForestForTrees} for linking image-based crown detections with structural
 and demographic estimates.
 
 The polygons in \code{harvardshapefile} represent crown segments generated from
@@ -39,7 +39,7 @@ for direct comparison between image-based crown structure and field-based
 forest inventory measurements.
 
 This dataset is intended for demonstration and testing purposes within
-\pkg{ScalingFromSkypackage}.
+\pkg{ForestForTrees}.
 }
 \examples{
 data(harvardshapefile)

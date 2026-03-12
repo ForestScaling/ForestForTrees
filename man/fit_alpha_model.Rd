@@ -5,8 +5,7 @@
 \title{Fit Alpha Using Bayesian Pareto Model with LAI and Breakpoint Corrections}
 \usage{
 fit_alpha_model(
-  bayesian_data,
-  breakpoint,
+  filtered_data,
   LAI,
   prior_mean,
   prior_sd,
@@ -19,14 +18,13 @@ fit_alpha_model(
 )
 }
 \arguments{
-\item{bayesian_data}{A data frame of filtered tree sizes (from \code{truncate_filter()}).}
-
-\item{breakpoint}{The final lower log10 size threshold (from KDE peak).}
+\item{filtered_data}{A list returned by \code{truncate_filter()}, containing the filtered
+tree size data frame (\code{bayesian_data}), the final breakpoint (\code{final_breakpoint}),
+and the log-scaled KDE data frame (\code{kerneldens_logtransform}).}
 
 \item{LAI}{A numeric value for site-level Leaf Area Index. The function assumes your LAI value is on
-a 1-10 scale and will divide by 10 to get LAI between 0 and 1 (e.g., if you have an LAI of 5 on a scale of 1-10,
-enter 5, while if you have a 50 on a scale of 1-100, enter 5)
-the LAI to be between 0 and 1}
+a 1-10 scale and will divide by 10 to get LAI between 0 and 1 (e.g., if you have an LAI of 5 on a
+scale of 1-10, enter 5, while if you have a 50 on a scale of 1-100, enter 5).}
 
 \item{prior_mean}{Prior mean for the alpha parameter.}
 
@@ -40,15 +38,18 @@ the LAI to be between 0 and 1}
 
 \item{chains}{Number of chains (default = 4).}
 
-\item{cores}{Number of CPU cores to use (default = 1).}
+\item{cores}{Number of CPU cores to use for parallel chains (default = 1).}
 
-\item{refresh}{Frequency of Stan progress output (default = 0).}
+\item{refresh}{Frequency of Stan progress output (default = 0, i.e., silent).}
 }
 \value{
 A list with:
 \describe{
 \item{posterior_summary}{Data frame of posterior summaries for alpha with R2.}
 \item{stan_fit}{Stan fit object.}
+\item{breakpoint_norm}{Normalized breakpoint value passed to downstream functions.}
+\item{LAI_norm}{Normalized LAI value passed to downstream functions.}
+\item{bayesian_data}{The filtered data frame used for model fitting.}
 }
 }
 \description{
@@ -56,4 +57,13 @@ This function fits a Pareto model to tree size data using a Bayesian approach wi
 accounting for reduced visibility of small trees and site-level LAI corrections. Note that running
 this function will require rstan, which itself needs Rtools. Rtools is not a CRAN package and as far
 as we know must be installed directly. Try this link (https://cran.r-project.org/bin/windows/Rtools/)
+}
+\examples{
+\dontrun{
+data("harv_data_sample")
+df <- harv_data_sample[harv_data_sample$IDhectbest == 1, "dbh", drop = FALSE]
+kde_output   <- potential_break(df)
+trunc_output <- truncate_filter(kde_output)
+fit <- fit_alpha_model(trunc_output, LAI = 5.4, prior_mean = 1.4, prior_sd = 0.3)
+}
 }

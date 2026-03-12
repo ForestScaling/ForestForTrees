@@ -2,18 +2,18 @@
 % Please edit documentation in R/alpha_fitting.R
 \name{truncate_filter}
 \alias{truncate_filter}
-\title{Determine Truncation Points and filter Data for Power-Law Modeling}
+\title{Determine Truncation Points and Filter Data for Power-Law Modeling}
 \usage{
 truncate_filter(breakpoint_kde_results, min_size = 10)
 }
 \arguments{
 \item{breakpoint_kde_results}{A list returned by \code{potential_break}.
 It must contain \code{potential_breakpoint}, \code{bootstrap_kde_log},
-\code{original_raw_data_df}, and \code{trim_max_value}.}
+and \code{original_data_trimmed}.}
 
-\item{min_size}{The mimimum tree DBH that will be in the final distribution. This is the lower bound to
-the Pareto distribution, not the breakpoint for obscured vs unobscured trees. As such, this is usually approx
-10 cm.}
+\item{min_size}{Numeric. Minimum tree size (DBH in cm) to retain in the
+filtered data (default = 10). Trees below this threshold are excluded
+regardless of the detected breakpoint.}
 }
 \value{
 A list with:
@@ -27,4 +27,12 @@ A list with:
 This function takes the potential breakpoint and KDE data from a previous step,
 performs segmented regression, determines the upper truncation point,
 and filters the original dataset to the identified size range.
+}
+\examples{
+\dontrun{
+data("harv_data_sample")
+df <- harv_data_sample[harv_data_sample$IDhectbest == 1, "dbh", drop = FALSE]
+kde_output   <- potential_break(df)
+trunc_output <- truncate_filter(kde_output)
+}
 }
